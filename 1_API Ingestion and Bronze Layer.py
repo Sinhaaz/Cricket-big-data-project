@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "5"
+# ///
 # DBTITLE 1,Importing libraries
 import requests
 import json
@@ -18,7 +22,7 @@ base_path = '/Volumes/workspace/default/cricket_api_project'
 
 # DBTITLE 1,Calling Cricket API
 API_KEY = 'f634e5fb-96fb-431e-af32-28b0a0fb1919'
-api_url = f"https://api.cricapi.com/v1/countries?apikey={API_KEY}&offset=0"
+api_url = f"https://api.cricapi.com/v1/currentMatches?apikey={API_KEY}&offset=0"
 
 response = requests.get(api_url)
 response.raise_for_status()
