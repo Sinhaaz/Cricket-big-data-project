@@ -1,11 +1,50 @@
 # Cricket-big-data-project
 In this project we will be using cricket api and getting final insights. Using Medallion Architecture.
 
+**Data Source:** https://cricketdata.org
+
+**Complete Flow:**
+
+```mermaid
+flowchart TD
+    A[🏏 Cricket API] --> B[📄 Raw JSON]
+    B --> C[📦 Databricks Volume]
+    C --> D[🥉 BRONZE<br/>Raw / Unprocessed Data]
+    D --> E[Parse JSON]
+    E --> F[Extract Fields]
+    F --> G[Flatten Nested Data]
+    G --> H[Clean Data]
+    H --> I[Remove Duplicates]
+    I --> J[Handle Nulls]
+    J --> K[Convert Data Types]
+    K --> L[Standardize Data]
+    L --> M[🥈 SILVER<br/>Cleaned / Structured Data]
+    M --> N[Aggregations]
+
+    N --> O1[Match Analytics]
+    N --> O2[Venue Analytics]
+    N --> O3[Team Analytics]
+
+    O1 --> P1[Match Count]
+    O1 --> P2[Match Types]
+    O1 --> P3[Status]
+
+    O2 --> Q1[Venue Count]
+    O2 --> Q2[Matches]
+    O2 --> Q3[Popularity]
+
+    O3 --> R1[Wins]
+    O3 --> R2[Losses]
+    O3 --> R3[Win %]
+
+    N --> S[🥇 GOLD<br/>Business-Ready Analytics]
+    S --> T[📊 Power BI / SQL / Reports]
+    T --> U[👥 Business Users]
+```
+
 ---
 
 ## 🔹 1_API Ingestion and Bronze Layer
-
-**Data Source:** https://cricketdata.org
 
 **BRONZE Layer Data Flow**
 
@@ -26,7 +65,7 @@ Delta Bronze Table
 
 This Databricks notebook ingests cricket match data from a REST API and stores it in the **Bronze layer** of the Medallion Architecture.
 
-**Import Libraries**
+**Import Libraries →**
 
 ```python
 import requests
@@ -42,7 +81,7 @@ Imports the required libraries:
 * `pyspark.sql.functions` → provides Spark functions such as `current_timestamp()`
 * `pyspark.sql.types` → defines the DataFrame schema
 
-**Create Catalog, Schema and Volume**
+**Create Catalog, Schema and Volume →**
 
 ```python
 spark.sql("CREATE CATALOG IF NOT EXISTS workspace")
@@ -56,7 +95,7 @@ Creates the Databricks **Catalog, Schema, and Volume** required for the project.
 
 The `base_path` specifies where the raw API data will be stored.
 
-**Call Cricket API**
+**Call Cricket API →**
 
 ```python
 API_KEY = '...'
@@ -75,7 +114,7 @@ Calls the Cricket API and retrieves the current cricket match data.
 * `raise_for_status()` → checks whether the request was successful
 * `response.json()` → converts the API response into JSON/Python data
 
-**Inspect API Response**
+**Inspect API Response →**
 
 ```python
 print(api_data)
@@ -85,7 +124,7 @@ print(json.dumps(api_data, indent=2)[:2000])
 
 Displays the **complete API response, keys and first part of the API response** to understand the structure of the incoming data.
 
-**Save Raw API Response**
+**Save Raw API Response →**
 
 ```python
 raw_file_path = f'{base_path}/current_matches_raw.json'
@@ -98,7 +137,7 @@ Saves the original API response as a **JSON file** in the Databricks Volume.
 
 This represents the **raw data** before transformations.
 
-**Create Bronze DataFrame**
+**Create Bronze DataFrame →**
 
 ```python
 bronze_data = [{
@@ -116,7 +155,7 @@ It stores:
 * `raw_json` → complete API response
 * `ingestion_time` → time when data was ingested
 
-**Define Bronze Schema**
+**Define Bronze Schema →**
 
 ```python
 bronze_schema = StructType([
@@ -128,7 +167,7 @@ bronze_schema = StructType([
 
 Defines the **schema and data types** for the Bronze DataFrame.
 
-**Create Bronze DataFrame**
+**Create Bronze DataFrame →**
 
 ```python
 bronze_df = spark.createDataFrame(
@@ -144,7 +183,7 @@ Creates a Spark DataFrame using the Bronze data and schema.
 
 `current_timestamp()` records the time when the data was ingested.
 
-**Display Bronze DataFrame**
+**Display Bronze DataFrame →**
 
 ```python
 display(bronze_df)
@@ -152,7 +191,7 @@ display(bronze_df)
 
 Displays the Bronze DataFrame in Databricks for verification.
 
-**Save Bronze Table**
+**Save Bronze Table →**
 
 ```python
 bronze_df.write \
@@ -171,7 +210,7 @@ workspace.default.cricket_bronze_current_matches
 
 This becomes the **Bronze layer** of the Medallion Architecture.
 
-**Success Message**
+**Success Message →**
 
 ```python
 display("BRONZE TABLE CREATED SUCCESSFULLY")
@@ -209,7 +248,7 @@ Structured Cricket Data
 
 The Silver layer reads the raw JSON data from the Bronze table, extracts useful cricket match fields, transforms the data into a structured format, and saves it as a Delta table.
 
-**Read Bronze Table**
+**Read Bronze Table →**
 
 ```sql
 select * from workspace.default.cricket_bronze_current_matches
@@ -217,7 +256,7 @@ select * from workspace.default.cricket_bronze_current_matches
 
 Reads and displays the data stored in the Bronze table.
 
-**Import Libraries**
+**Import Libraries →**
 
 ```python
 import json
@@ -232,7 +271,7 @@ Imports the required libraries for:
 * Applying Spark transformations
 * Defining DataFrame schemas
 
-**Read Bronze Data and Parse JSON**
+**Read Bronze Data and Parse JSON →**
 
 ```python
 bronze_df = spark.table(
@@ -251,7 +290,7 @@ matches = api_data.get("data", [])
 - The `data` field containing the cricket matches is then extracted.
 - `collect()` brings the selected data into the **driver memory**, so it should only be used when the amount of data is small.
 
-**Extract Useful Fields**
+**Extract Useful Fields →**
 
 Loops through each cricket match and extracts only the required fields.
 
@@ -282,7 +321,7 @@ It also formats the scores into a readable format such as:
 The extracted records are stored in `silver_rows`.
 <br>This is the main **transformation step from Bronze to Silver**.
 
-**Create Silver DataFrame**
+**Create Silver DataFrame →**
 
 Defines the schema for the Silver data and creates a Spark DataFrame.
 
@@ -308,7 +347,7 @@ The resulting DataFrame is displayed using:
 display(silver_df)
 ```
 
-**Save Silver Table**
+**Save Silver Table →**
 
 ```python
 silver_df.write \
@@ -357,7 +396,7 @@ Business Analytics
 
 The Gold layer reads the cleaned Silver data and creates **business-level analytics** that can be used for reporting and dashboards.
 
-**Import Libraries**
+**Import Libraries →**
 
 ```python
 from pyspark.sql.functions import *
@@ -365,7 +404,7 @@ from pyspark.sql.functions import *
 
 Imports Spark SQL functions required for aggregation operations such as `count()` and `groupBy()`.
 
-**Read the Silver Layer**
+**Read the Silver Layer →**
 
 ```python
 silver_df = spark.table(
@@ -377,7 +416,7 @@ display(silver_df)
 
 Reads the Silver Delta table and displays the cleaned and structured cricket match data.
 
-**Match Type Distribution**
+**Match Type Distribution →**
 
 ```python
 gold_match_type_df = silver_df.groupBy('match_type') \
@@ -394,7 +433,7 @@ Example categories could include:
 
 This creates a Gold-level analytical dataset.
 
-**Venue-wise Match Count**
+**Venue-wise Match Count →**
 
 ```python
 gold_venue_df = silver_df.groupBy('venue') \
@@ -403,7 +442,7 @@ gold_venue_df = silver_df.groupBy('venue') \
 
 Groups the matches by **venue** and calculates how many matches have been played at each venue.
 
-**Team-wise Match Count**
+**Team-wise Match Count →**
 
 ```python
 team_1_df = silver_df.select(col("team_1").alias("Team"))
@@ -425,7 +464,7 @@ team_1 ──┐
 team_2 ──┘
 ```
 
-**Final Analytics Queries**
+**Final Analytics Queries →**
 
 ```python
 display(spark.sql("""select count(*) as Total_matches,
