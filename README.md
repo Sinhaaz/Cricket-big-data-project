@@ -6,10 +6,14 @@ In this project we will be using cricket api and getting final insights. Using M
 ## 🔹 What is Medallion Architecture?
 Medallion architecture is a data engineering design pattern for organizing data into progressively cleaner and more trustworthy layers. It's commonly used in modern data lakehouses, especially with platforms like Databricks, but the concept is broadly applicable.
 
-### 🔹 Data Lakehouses
+---
+
+## 🔹 Data Lakehouses
 A Data Lakehouse is an architecture that combines the best parts of a **Data Lake** and a **Data Warehouse**.
 
 ![Data Lakehouse Image](https://github.com/Sinhaaz/Cricket-big-data-project/blob/main/Data%20Lakehouse.png)
+
+---
 
 ### 🔹 Data Lakehouse Layers
 
@@ -94,7 +98,7 @@ These datasets are optimized for BI tools like Microsoft, Tableau, or SQL querie
 
 ---
 
-### End-to-End Example
+### 🔹 End-to-End Example
 
 Suppose you're building an e-commerce analytics platform.
 
