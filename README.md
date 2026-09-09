@@ -9,11 +9,11 @@ Medallion architecture is a data engineering design pattern for organizing data 
 ### Data Lakehouses
 A Data Lakehouse is an architecture that combines the best parts of a **Data Lake** and a **Data Warehouse**.
 
-![Data Lakehouse Image](path/to/image.png)
+![Data Lakehouse Image](https://github.com/Sinhaaz/Cricket-big-data-project/blob/main/Data%20Lakehouse.png)
 
 ### Data Lakehouse Layers
 
-![Medallion Architecture](path/to/image.png)
+![Medallion Architecture](https://github.com/Sinhaaz/Cricket-big-data-project/blob/main/Medallion%20Arch.png)
 
 ---
 
